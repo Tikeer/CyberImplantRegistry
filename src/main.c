@@ -1,3 +1,5 @@
-//
-// Created by Sebastian Dmochowski on 13/12/2025.
-//
+#include "stdio.h"
+#include "stdlib.h"
+#include "ctype.h"
+#include "string.h"
+#include "time.h"
