@@ -1,1 +1,1 @@
-# Rejestr-Ulepsze-Cybernetycznych-Obywateli
+# Rejestr-Ulepszeń-Cybernetycznych-Obywateli
