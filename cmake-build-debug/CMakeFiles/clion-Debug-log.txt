@@ -1,0 +1,1 @@
+CMakeLists.txt not found in /Users/sd/Documents/programming/C_language/podstawy_programowania/Projekt koncowy PP Select CMakeLists.txt
