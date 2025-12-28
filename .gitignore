@@ -6,4 +6,12 @@
 enterprise
 app
 
+build/
+.vscode/
+.idea/
+cmake-build-debug/
+
+.DS_Store
+Thumbs.db
+
 Makefile

@@ -1,8 +1,26 @@
-//
-// Created by Sebastian Dmochowski on 13/12/2025.
-//
 
 #ifndef PROJEKT_KONCOWY_PP_IMPLANT_DEF_H
 #define PROJEKT_KONCOWY_PP_IMPLANT_DEF_H
+
+typedef enum {
+    LEGAL,
+    GRAY_AREA,
+    ILLEGAL
+} ImplantStatus;
+
+typedef struct implant {
+    char name[101];
+    char developer[128];
+    int risk;
+    double energy;
+    ImplantStatus status;
+    char id[128];
+
+}Implant;
+
+typedef struct node {
+    Implant data;
+    struct node* next;
+}Node;
 
 #endif //PROJEKT_KONCOWY_PP_IMPLANT_DEF_H
