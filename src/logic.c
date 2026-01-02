@@ -1,3 +1,2 @@
-//
-// Created by Sebastian Dmochowski on 13/12/2025.
-//
+//jesli energia powyzej 85% czyli zuzywa wiecej niz 85% egnergi w jednym cylku to jest niebezpieczny
+//i niezgodny z miejskimi normami nie wiem gdzie to zaimplementowac?
