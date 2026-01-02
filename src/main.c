@@ -14,4 +14,9 @@ int main(int argc, char* argv[]) {
     }
 
     char* db_path = argv[1];
+
+
+    while (1) {
+
+    }
 }

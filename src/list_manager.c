@@ -85,9 +85,6 @@ void free_list(Node** head_ref) {
     }
     *head_ref = NULL;
 }
-void show_list(Node** head_ref) {
-
-}
 int list_length(Node* head) {
     Node* current = head;
     int length = 0;
