@@ -7,5 +7,6 @@
 #include "implant_def.h"
 
 Node* create_node(Implant data);
+void append_node(Node** head_ref, Implant data);
 
 #endif //PROJEKT_KONCOWY_PP_LIST_MANAGER_H
