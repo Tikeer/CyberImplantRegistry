@@ -20,6 +20,14 @@ void append_node(Node** head_ref, Implant data) {
     Node* current = *head_ref;
     Node* new_node = create_node(data);
 
+    while (current != NULL) {
+        if (strcmp(current->data.id, data.id) == 0 && strcmp(current->data.name, data.name) == 0 ) {
+            printf("DUPLIKAT");
+            return;
+        }
+        current = current->next;
+    }
+
     if (new_node == NULL) {
         return;
     }
@@ -27,6 +35,7 @@ void append_node(Node** head_ref, Implant data) {
     if (*head_ref == NULL) {
         *head_ref = new_node;
     }else {
+        current = *head_ref;
         while (current->next != NULL) {
             current = current->next;
         }
@@ -37,15 +46,7 @@ void append_node(Node** head_ref, Implant data) {
 void delete_node(Node** head_ref, char* id_to_delete) {
     Node* current = *head_ref;
     Node* previous = NULL;
-    /*
-     * sprawdzam czy lista nie jest pusta
-     * szukam elementu ktory chce usunac przechodzac po liscie
-     * porownoje id z istniejacym elementem
-     * jesli tak to usuwam wagonik i omijam usuniety wagon i go lacze z nastepnym
-     * czyli usuniecie wagonika to po prostu free(x)
-     * laczymy po przez przypisanie poprzedniego do obecnego i obecnego do nastepnego
-     * i petla przechodzi znowu i sprawdza ze poprzedni nie jest pusty i laczy wagoniki
-     */
+
     if (current == NULL) {
         return;
     }
@@ -65,7 +66,6 @@ void delete_node(Node** head_ref, char* id_to_delete) {
                 }
                 else {
                     previous->next = current->next;
-                    current = current->next;
                     free(current);
                     return;
                 }
@@ -76,7 +76,7 @@ void delete_node(Node** head_ref, char* id_to_delete) {
     }
 }
 
-Node* free_list(Node** head_ref) {
+void free_list(Node** head_ref) {
     Node* current = *head_ref;
     while (current != NULL) {
         Node* next = current->next;
@@ -85,7 +85,43 @@ Node* free_list(Node** head_ref) {
     }
     *head_ref = NULL;
 }
+void show_list(Node** head_ref) {
 
+}
+int list_length(Node* head) {
+    Node* current = head;
+    int length = 0;
+
+    while (current != NULL) {
+        length++;
+        current = current->next;
+    }
+    return length;
+}
 void sort_list(Node** head_ref) {
+    /*
+     * sortowanie ma chyba polegac na tym ze mozna je posortowac wedlug np nazwy,developera,id
+     * to alfabetycznie i tez albo od a albo od z potem mozna energie,risk sortowac wedlug
+     * od najwiekszej do najmniejszej i na odwrot oraz mozna sortowac po statusie czyli po prostu
+     * wypisuje te same pod soba potem nastepny i tak dalej
+     */
+    Node* current = *head_ref;
+    int swapped =0;
 
+    while (current == NULL || list_length(current) <=1) {
+        return;
+    }
+    do{
+        swapped = 0;
+        current = *head_ref;
+        do {
+            if (strcmp(current->data.name, current->next->data.name) > 0) {
+                Implant temp = current->data;
+                current->data = current->next->data;
+                current->next->data = temp;
+                swapped = 1;
+            }
+            current = current->next;
+        }while (current->next != NULL);
+    }while (swapped == 1);
 }
