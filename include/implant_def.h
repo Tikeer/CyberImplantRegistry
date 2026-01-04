@@ -7,6 +7,12 @@ typedef enum {
     ILLEGAL
 } ImplantStatus;
 
+typedef struct statistics {
+    int legal_counter;
+    int illegal_counter;
+    int gray_area_counter;
+}stats;
+
 typedef struct implant {
     char name[101];
     char developer[128];
