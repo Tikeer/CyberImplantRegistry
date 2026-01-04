@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "implant_def.h"
 #include <string.h>
+#include "logic.h"
+#include "ui.h"
 
 Node* create_node(Implant data) {
     Node* new_node = (Node*)malloc(sizeof(Node));
@@ -105,7 +107,7 @@ void sort_list(Node** head_ref) {
     Node* current = *head_ref;
     int swapped =0;
 
-    while (current == NULL || list_length(current) <=1) {
+    if (current == NULL || list_length(current) <=1) {
         return;
     }
     do{
@@ -121,4 +123,58 @@ void sort_list(Node** head_ref) {
             current = current->next;
         }while (current->next != NULL);
     }while (swapped == 1);
+}
+
+void edit_implant_data(Node** head_ref,char* search_data) {
+    Node* current = *head_ref;
+    int program = -1;
+    int choice = -1;
+    char buffer[128];
+    Implant temp = current->data;
+
+    if (current == NULL) {
+        return;
+    }
+
+    while (current != NULL) {
+        if (strcmp(current->data.id, search_data) == 0) {
+           choice = show_edit_menu(program);
+
+            switch (choice) {
+                case 1: {
+                    read_line(buffer, 128);
+                    strcpy(current->data.id, buffer);
+                    break;
+                }
+                case 2: {
+                    read_line(buffer, 128);
+                    strcpy(current->data.developer, buffer);
+                    break;
+                }
+                case 3: {
+                    scanf("%d",&temp.risk);
+                    if (validate_implant_rules(temp) == 1) {
+                        temp.risk = current->data.risk;
+                    }
+                    else {
+                        printf("Blad przy zmianie danych.\n");
+                    }
+                    break;
+                }
+                case 4: {
+                    scanf("%lf",&temp.energy);
+                    if (validate_implant_rules(temp) == 1) {
+                        temp.energy = current->data.energy;
+                    }
+                    else {
+                        printf("Blad przy zmianie danych.\n");
+                    }
+                    break;
+                }
+                default:
+                    printf("Wybierz poprawny numer z zakresu 1-4\n");
+            }
+            return;
+        }
+    }
 }
