@@ -11,6 +11,7 @@ typedef struct statistics {
     int legal_counter;
     int illegal_counter;
     int gray_area_counter;
+    int sum;
 }stats;
 
 typedef struct implant {
