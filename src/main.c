@@ -6,6 +6,8 @@
 #include <string.h>
 #include <time.h>
 
+#include "ui.h"
+
 int main(int argc, char* argv[]) {
     if (argc < 2) {
         printf("Nie podano zadnych argumentow \n");
@@ -14,9 +16,9 @@ int main(int argc, char* argv[]) {
     }
 
     char* db_path = argv[1];
-
+    Node* head = NULL;
 
     while (1) {
-
+        print_menu(head);
     }
 }

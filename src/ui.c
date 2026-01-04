@@ -4,6 +4,14 @@
 #include "list_manager.h"
 #include "logic.h"
 
+const char* status_string(ImplantStatus status) {
+    switch (status) {
+        case LEGAL: return "LEGAL";
+        case GRAY_AREA: return "GRAY AREA";
+        case ILLEGAL: return "ILLEGAL";
+    }
+}
+
 Implant get_user_input() {
     Implant temp;
     int x = -1;
@@ -34,13 +42,13 @@ Implant get_user_input() {
 
     switch (x) {
         case 1:
-            temp.status = (ImplantStatus)x;
+            temp.status = (ImplantStatus)(x - 1);
             break;
         case 2:
-            temp.status = (ImplantStatus)x;
+            temp.status = (ImplantStatus)(x - 1);
             break;
         case 3:
-            temp.status = (ImplantStatus)x;
+            temp.status = (ImplantStatus)(x - 1);
             break;
         default:
             printf("Podaj liczbe z zakresu 1-3:\n");
@@ -49,7 +57,8 @@ Implant get_user_input() {
     return temp;
 }
 
-int print_menu(Node* head) {
+int print_menu(Node** head_ref) {
+    Node* current = *head_ref;
     int program = -1;
 
     system("cls");
@@ -70,14 +79,19 @@ int print_menu(Node* head) {
             Implant new_product = get_user_input();
 
             if (validate_implant_rules(new_product) == 1) {
-                append_node(&head,new_product);
+                append_node(&current,new_product);
             }
             else {
                 printf("Blad przy rejestracji.\n");
             }
             break;
         case 2:
+            char search[100];
+            printf("Podaj nazwe,ID lub producenta implantu:\n");
+            scanf("%s",search);
+            printf("\n");
 
+            find_implant(head_ref,search);
             break;
         case 3:
 
@@ -98,7 +112,16 @@ int print_menu(Node* head) {
     }
 }
 
-void get_implant_data() {
+void show_implant_data(Implant data) {
+
+    printf("DANE IMPLANTU\n");
+    printf("Nazwa: %s\n",data.name);
+    printf("ID: %s\n", data.id);
+    printf("Producent: %s \n",data.developer);
+    printf("Ryzyko: %d \n",data.risk);
+    printf("Poziom mocy: %.2f \n",data.energy);
+    printf("Status: %s \n",status_string(data.status));
+
 
 }
 
