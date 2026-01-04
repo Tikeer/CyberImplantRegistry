@@ -8,7 +8,6 @@
 void save_database(char* db_path, Node* node) {
     Node* current = node;
     FILE *f = fopen(db_path,"w");
-    int index = 0;
 
     if (!f) {
         printf("Blad przy otwieraniu pliku database.txt %s \n", strerror(errno));
@@ -16,8 +15,7 @@ void save_database(char* db_path, Node* node) {
     }
 
     while (current != NULL) {
-        index++;
-        fprintf(f,"%s %s %s %d %lf %d \n",
+        fprintf(f,"%s;%s;%s;%d;%lf;%d \n",
             current->data.name,
             current->data.id,
             current->data.developer,
@@ -42,11 +40,11 @@ void load_database(char* db_path, Node** head_ref) {
 
 
     if (!f) {
-        printf("Blad przy otwieraniu pliku database.txt %s \n", strerror(errno));
+        printf("Blad przy otwieraniu pliku %s %s \n",db_path ,strerror(errno));
         return;
     }
 
-    while (fscanf(f,"%s %s %s %d %lf %d",
+    while (fscanf(f," %[^;];%[^;];%[^;];%d;%lf;%d",
         temp_name,
         temp_id,
         temp_developer,
