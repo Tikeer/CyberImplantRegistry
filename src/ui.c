@@ -1,8 +1,27 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+#define SIZE 100
+#include "file_io.h"
 #include "implant_def.h"
 #include "list_manager.h"
 #include "logic.h"
+
+void clear_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+void read_line(char* buffer, int size) {
+    if (fgets(buffer, size, stdin) != NULL) {
+        buffer[strcspn(buffer, "\n")] = 0;
+    }
+}
+
+void wait_for_enter() {
+    printf("\nNacisnij enter aby kontynuowac");
+    getchar();
+}
 
 const char* status_string(ImplantStatus status) {
     switch (status) {
@@ -16,16 +35,18 @@ Implant get_user_input() {
     Implant temp;
     int x = -1;
 
+    clear_buffer();
+
     printf("Podaj nazwe implantu:\n");
-    scanf("%s", temp.name);
+    read_line(temp.name,SIZE);
     printf("\n");
 
     printf("Podaj nazwe producenta:\n");
-    scanf("%s", temp.developer);
+    read_line(temp.developer,SIZE);
     printf("\n");
 
     printf("Podaj ID wlasciciela:\n");
-    scanf("%s", temp.id);
+    read_line(temp.id,SIZE);
     printf("\n");
 
     printf("Podaj ryzyko implantu:\n");
@@ -38,7 +59,11 @@ Implant get_user_input() {
 
     printf("Wybierz status implantu: \n");
     printf("1. LEGAL 2.GRAY_AREA 3.ILLEGAL\n");
-    scanf(" %d",&x);
+
+    if (scanf(" %d", &x) != 1) {
+        while (getchar() != '\n');
+        x = -1;
+    }
 
     switch (x) {
         case 1:
@@ -52,16 +77,44 @@ Implant get_user_input() {
             break;
         default:
             printf("Podaj liczbe z zakresu 1-3:\n");
+            temp.status = ILLEGAL;
     }
 
     return temp;
 }
 
-int print_menu(Node** head_ref) {
-    Node* current = *head_ref;
-    int program = -1;
+void print_table(Node* head,stats s) {
 
-    system("cls");
+    if (head == NULL) {
+        printf("Baza danych jest pusta\n");
+    }
+
+    printf("\n%-20s || %-15s || %-15s || %-5s || %-8s || %-10s\n",
+           "Nazwa", "ID", "Producent", "Ryzyko", "Energia", "Status");
+
+    while (head != NULL) {
+        printf("%-20s || %-15s || %-10s || %-5d || %f || %5s",
+            head->data.name,
+            head->data.id,
+            head->data.developer,
+            head->data.risk,
+            head->data.energy,
+            status_string(head->data.status));
+        head = head->next;
+    }
+
+    printf("\nSTATYSTYKI\n");
+    printf("Znaleziono: %d rekordow w tym:\n",s.sum);
+    printf("%d legalnych implantow\n",s.legal_counter);
+    printf("%d implantow z szarej strefy\n",s.gray_area_counter);
+    printf("%d nie legalnych implantow\n",s.illegal_counter);
+}
+
+int print_menu(Node** head_ref,char* db_path) {
+    int program = -1;
+    char buffer[128];
+
+    system("clear");
     printf("Witaj w Neonowej Warszawie gdzie ulice nigdy nie spia\n");
     printf("Oto Centralny Rejestr Cybernetycznych Modyfikacji \n");
     printf("Wybierz co chcesz zrobic: \n");
@@ -70,46 +123,98 @@ int print_menu(Node** head_ref) {
     printf("3. Modyfikowanie danych o implantach\n");
     printf("4. Sortowanie danych\n");
     printf("5. Usuwanie danych\n");
-    printf("6. Zapis/Odczyt z bazy danych\n");
+    printf("6. Zapis do bazy danych\n");
+    printf("7. Wyswietlenie tabelki z danymi\n");
     printf("0. Wyjdz z programu\n");
-    scanf(" %d", &program);
+
+    if (scanf(" %d", &program) != 1) {
+        while (getchar() != '\n');
+        program = -1;
+    }
 
     switch (program) {
-        case 1:
+        case 1: {
             Implant new_product = get_user_input();
 
             if (validate_implant_rules(new_product) == 1) {
-                append_node(&current,new_product);
+                append_node(head_ref,new_product);
             }
             else {
                 printf("Blad przy rejestracji.\n");
             }
+            clear_buffer();
+            wait_for_enter();
             break;
-        case 2:
+        }
+        case 2: {
             char search[100];
-            printf("Podaj nazwe,ID lub producenta implantu:\n");
-            scanf("%s",search);
+            clear_buffer();
+
+            printf("Podaj nazwe implantu lub ID wlasciciela:\n");
+            read_line(search, SIZE);
             printf("\n");
 
             find_implant(head_ref,search);
-            break;
-        case 3:
 
+            wait_for_enter();
             break;
-        case 4:
+        }
+        case 3: {
+            clear_buffer();
 
-            break;
-        case 5:
+            printf("Podaj ID zeby zedytowac dane:\n");
+            read_line(buffer, SIZE);
 
+            edit_implant_data(head_ref,buffer);
+
+            clear_buffer();
+            wait_for_enter();
             break;
+        }
+        case 4: {
+            stats s = count_illegal(head_ref);
+            sort_list(head_ref);
+
+            print_table(*head_ref,s);
+
+            clear_buffer();
+            wait_for_enter();
+            break;
+        }
+        case 5: {
+            clear_buffer();
+
+            printf("Podaj ID do usuniecia:\n");
+            read_line(buffer, SIZE);
+            try_delete_implant(head_ref,buffer);
+            wait_for_enter();
+            break;
+        }
         case 6:
+            save_database(db_path,*head_ref);
+            printf("Dane zostaly zapisane w: %s \n",db_path);
 
+            clear_buffer();
+            wait_for_enter();
             break;
+        case 7: {
+            stats st = count_illegal(head_ref);
+
+            print_table(*head_ref,st);
+
+            clear_buffer();
+            wait_for_enter();
+            break;
+        }
         case 0:
+            save_database(db_path,*head_ref);
             return 0;
         default:
-            printf("Podaj poprawny numer programu!");
+            printf("Podaj poprawny numer programu!\n\n");
+            clear_buffer();
+            wait_for_enter();
     }
+    return 1;
 }
 
 void show_implant_data(Implant data) {
@@ -120,11 +225,22 @@ void show_implant_data(Implant data) {
     printf("Producent: %s \n",data.developer);
     printf("Ryzyko: %d \n",data.risk);
     printf("Poziom mocy: %.2f \n",data.energy);
-    printf("Status: %s \n",status_string(data.status));
+    printf("Status: %s \n\n",status_string(data.status));
 
 
 }
 
-void print_table() {
+int show_edit_menu(int program) {
+    printf("Wybierz ktore pole chcesz zedytowac:\n");
+    printf("1. ID\n");
+    printf("2. Producent\n");
+    printf("3. Ryzyko\n");
+    printf("4. Status\n");
 
+    if (scanf(" %d", &program) != 1) {
+        while (getchar() != '\n');
+        program = -1;
+    }
+
+    return program;
 }
