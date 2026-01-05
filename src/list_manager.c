@@ -64,12 +64,10 @@ void delete_node(Node** head_ref, char* id_to_delete) {
                 if (previous == NULL) {
                     *head_ref = current->next;
                     free(current);
-                    return;
                 }
                 else {
                     previous->next = current->next;
                     free(current);
-                    return;
                 }
             }
         }
@@ -97,15 +95,10 @@ int list_length(Node* head) {
     }
     return length;
 }
-void sort_list(Node** head_ref) {
-    /*
-     * sortowanie ma chyba polegac na tym ze mozna je posortowac wedlug np nazwy,developera,id
-     * to alfabetycznie i tez albo od a albo od z potem mozna energie,risk sortowac wedlug
-     * od najwiekszej do najmniejszej i na odwrot oraz mozna sortowac po statusie czyli po prostu
-     * wypisuje te same pod soba potem nastepny i tak dalej
-     */
+void sort_list(Node** head_ref, int cryteria) {
     Node* current = *head_ref;
     int swapped =0;
+    int should_swap = 0;
 
     if (current == NULL || list_length(current) <=1) {
         return;
@@ -114,13 +107,31 @@ void sort_list(Node** head_ref) {
         swapped = 0;
         current = *head_ref;
         do {
-            if (strcmp(current->data.name, current->next->data.name) > 0) {
+            switch (cryteria) {
+                case 1:
+                    if (strcmp(current->data.name, current->next->data.name) > 0) {
+                        should_swap = 1;
+                    }
+                    break;
+                case 2:
+                    if (strcmp(current->data.id, current->next->data.id) > 0) {
+                        should_swap = 1;
+                    }
+                    break;
+                case 3:
+                    if (current->data.risk > current->next->data.risk) {
+                        should_swap = 1;
+                    }
+                    break;
+                }
+            if (should_swap == 1) {
                 Implant temp = current->data;
                 current->data = current->next->data;
                 current->next->data = temp;
                 swapped = 1;
             }
             current = current->next;
+            should_swap = 0;
         }while (current->next != NULL);
     }while (swapped == 1);
 }
@@ -130,31 +141,40 @@ void edit_implant_data(Node** head_ref,char* search_data) {
     int program = -1;
     int choice = -1;
     char buffer[128];
-    Implant temp = current->data;
 
     if (current == NULL) {
         return;
     }
 
+    Implant temp;
+
     while (current != NULL) {
         if (strcmp(current->data.id, search_data) == 0) {
-           choice = show_edit_menu(program);
-
+            choice = show_edit_menu(program);
+            temp = current->data;
             switch (choice) {
                 case 1: {
+                    clear_buffer();
+                    printf("Podaj nowe dane:\n");
                     read_line(buffer, 128);
                     strcpy(current->data.id, buffer);
                     break;
                 }
                 case 2: {
+                    clear_buffer();
+                    printf("Podaj nowe dane:\n");
                     read_line(buffer, 128);
                     strcpy(current->data.developer, buffer);
                     break;
                 }
                 case 3: {
+                    printf("Podaj nowe dane:\n");
                     scanf("%d",&temp.risk);
-                    if (validate_implant_rules(temp) == 1) {
-                        temp.risk = current->data.risk;
+
+                    int res = validate_implant_rules(temp);
+
+                    if (res == 1 || res == 2) {
+                        current->data.risk = temp.risk;
                     }
                     else {
                         printf("Blad przy zmianie danych.\n");
@@ -162,9 +182,16 @@ void edit_implant_data(Node** head_ref,char* search_data) {
                     break;
                 }
                 case 4: {
+                    printf("Podaj nowe dane:\n");
                     scanf("%lf",&temp.energy);
-                    if (validate_implant_rules(temp) == 1) {
-                        temp.energy = current->data.energy;
+
+                    int res = validate_implant_rules(temp);
+
+                    if (res == 1 || res == 2) {
+                        current->data.energy = temp.energy;
+                        if (res == 2) {
+                            current->data.status = ILLEGAL;
+                        }
                     }
                     else {
                         printf("Blad przy zmianie danych.\n");
@@ -176,5 +203,6 @@ void edit_implant_data(Node** head_ref,char* search_data) {
             }
             return;
         }
+        current = current->next;
     }
 }

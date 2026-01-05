@@ -9,5 +9,6 @@ int show_edit_menu(int program);
 void read_line(char* buffer, int size);
 void wait_for_enter();
 void print_table(Node* head,stats s);
+void clear_buffer();
 
 #endif //PROJEKT_KONCOWY_PP_UI_H

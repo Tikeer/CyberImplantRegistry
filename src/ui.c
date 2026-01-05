@@ -6,6 +6,11 @@
 #include "implant_def.h"
 #include "list_manager.h"
 #include "logic.h"
+#ifdef _WIN32
+    #define CLEAR "cls"
+#else
+    #define CLEAR "clear"
+#endif
 
 void clear_buffer() {
     int c;
@@ -28,7 +33,41 @@ const char* status_string(ImplantStatus status) {
         case LEGAL: return "LEGAL";
         case GRAY_AREA: return "GRAY AREA";
         case ILLEGAL: return "ILLEGAL";
+        default: return "ERROR";
     }
+}
+
+int show_criteria_menu() {
+    int program;
+    printf("Jak chcesz posortowac dane?\n");
+    printf("1. Nazwa\n");
+    printf("2. ID\n");
+    printf("3. Ryzyko\n");
+
+    if (scanf(" %d", &program) != 1) {
+        while (getchar() != '\n');
+        program = -1;
+    }
+
+    return program;
+}
+
+int show_search_menu() {
+    int program;
+    printf("Podaj po czym chceszz wyszukac:\n");
+    printf("1.Nazwa\n");
+    printf("2.ID\n");
+    printf("3.Producent\n");
+    printf("4.Ryzyko\n");
+    printf("5. Moc energii\n");
+    printf("6. Status\n");
+
+    if (scanf(" %d", &program) != 1) {
+        while (getchar() != '\n');
+        program = -1;
+    }
+
+    return program;
 }
 
 Implant get_user_input() {
@@ -93,7 +132,7 @@ void print_table(Node* head,stats s) {
            "Nazwa", "ID", "Producent", "Ryzyko", "Energia", "Status");
 
     while (head != NULL) {
-        printf("%-20s || %-15s || %-10s || %-5d || %f || %5s",
+        printf("%-20s || %-15s || %-15s || %-5d || %-8.2f || %-10s\n",
             head->data.name,
             head->data.id,
             head->data.developer,
@@ -107,14 +146,14 @@ void print_table(Node* head,stats s) {
     printf("Znaleziono: %d rekordow w tym:\n",s.sum);
     printf("%d legalnych implantow\n",s.legal_counter);
     printf("%d implantow z szarej strefy\n",s.gray_area_counter);
-    printf("%d nie legalnych implantow\n",s.illegal_counter);
+    printf("%d nielegalnych implantow\n",s.illegal_counter);
 }
 
 int print_menu(Node** head_ref,char* db_path) {
     int program = -1;
     char buffer[128];
 
-    system("clear");
+    system(CLEAR);
     printf("Witaj w Neonowej Warszawie gdzie ulice nigdy nie spia\n");
     printf("Oto Centralny Rejestr Cybernetycznych Modyfikacji \n");
     printf("Wybierz co chcesz zrobic: \n");
@@ -135,8 +174,13 @@ int print_menu(Node** head_ref,char* db_path) {
     switch (program) {
         case 1: {
             Implant new_product = get_user_input();
-
-            if (validate_implant_rules(new_product) == 1) {
+            int wynik = validate_implant_rules(new_product);
+            if (wynik == 1) {
+                append_node(head_ref,new_product);
+            }
+            else if (wynik == 2) {
+                new_product.status = ILLEGAL;
+                printf("Moc energi zbyt duza, zmienianie statusu\n");
                 append_node(head_ref,new_product);
             }
             else {
@@ -150,11 +194,8 @@ int print_menu(Node** head_ref,char* db_path) {
             char search[100];
             clear_buffer();
 
-            printf("Podaj nazwe implantu lub ID wlasciciela:\n");
-            read_line(search, SIZE);
-            printf("\n");
-
-            find_implant(head_ref,search);
+            int choice = show_search_menu();
+            find_implant(head_ref,search,choice);
 
             wait_for_enter();
             break;
@@ -172,8 +213,10 @@ int print_menu(Node** head_ref,char* db_path) {
             break;
         }
         case 4: {
+            int choice;
             stats s = count_illegal(head_ref);
-            sort_list(head_ref);
+            choice = show_criteria_menu();
+            sort_list(head_ref,choice);
 
             print_table(*head_ref,s);
 
@@ -235,7 +278,7 @@ int show_edit_menu(int program) {
     printf("1. ID\n");
     printf("2. Producent\n");
     printf("3. Ryzyko\n");
-    printf("4. Status\n");
+    printf("4. Energia\n");
 
     if (scanf(" %d", &program) != 1) {
         while (getchar() != '\n');
