@@ -1,23 +1,28 @@
-Oko laserowe;1;Militech;9;300.000000;2 
-Kosy w przedramieniach;1;Anonymous;9;200.000000;1 
-Tytanowy egzoszkielet;2;Arasaka;10;85.000000;0 
-Oko Bioniczne v1;WAW-001;Militech;2;120.500000;0
-Kiroshi Optics Mk3;NCPD-997;Kiroshi;1;45.000000;0
-Sandevistan Operating System;DAVID-01;Arasaka;9;850.000000;2
-Tytanowe Kosci;SOLO-2077;Biotechnica;4;15.000000;1
-Mantis Blades Zregenerowane;CYBER-PSYCHO;Scavengers;10;300.000000;2
-Syntetyczna Watroba;ALKO-100;BodyShop;0;5.000000;0
-Wzmacniacz Refleksu;NET-RUN;Zetatech;3;60.000000;0
-Podskorny Pancerz;TANK-01;Militech;5;0.000000;1
-Monostruna;LUCY-01;Arasaka;8;210.000000;2
-Gorilla Arms;STRONG-MAN;Animals;7;400.000000;1
-System Celowniczy Smart;TYGER-01;Tyger Claws;6;120.000000;2
-Pewne Rece;DOC-01;Trauma Team;1;10.000000;0
-Modul Karykaturzysty;ART-01;NoName;0;2.500000;1
-Wspomaganie Skoku;LEGS-01;Dynalar;3;150.000000;0
-Synapsy Ochronne;CORPO-01;Arasaka;2;80.000000;0
-Bioniczne Pluca;SMOG-WAW;Biotechnica;1;20.000000;0
-Wyrzutnia Rakiet;BOOM-01;Bazarek;10;900.000000;2
-Zmieniacz Glosu;SPY-007;Militech;4;30.000000;1
-Implant Pamieci;JOHNNY;Arasaka;6;50.000000;1
-Ostrza Modliszkowe;MAX-TAC;Militech;8;320.000000;0
+Syntetyczna Watroba;ALKO-100;BodyShop;0;5.000000;0 
+Modul Karykaturzysty;ART-01;NoName;0;2.500000;1 
+Pewne Rece;DOC-01;Trauma Team;1;10.000000;0 
+Mozg Einstein;GENIUS;Arasaka;1;5.000000;0 
+Kiroshi Optics Mk3;NCPD-997;Kiroshi;1;45.000000;0 
+Bioniczne Pluca;SMOG-WAW;Biotechnica;1;20.000000;0 
+Synapsy Ochronne;CORPO-01;Arasaka;2;80.000000;0 
+Zlote Rence;JANUSZ-01;SzrotPol;2;10.000000;1 
+Oko Bioniczne v1;WAW-001;Militech;2;120.500000;0 
+Nogi Strusia;JANUSZ-01;Biotechnica;3;120.000000;0 
+Wspomaganie Skoku;LEGS-01;Dynalar;3;150.000000;0 
+Wzmacniacz Refleksu;NET-RUN;Zetatech;3;60.000000;0 
+Tytanowe Kosci;SOLO-2077;Biotechnica;4;15.000000;1 
+Zmieniacz Glosu;SPY-007;Militech;4;30.000000;1 
+Wspomaganie Celowania;SNAIPER;Militech;5;100.000000;0 
+Podskorny Pancerz;TANK-01;Militech;5;0.000000;1 
+Implant Pamieci;JOHNNY;Arasaka;6;50.000000;1 
+System Celowniczy Smart;TYGER-01;Tyger Claws;6;120.000000;2 
+Gorilla Arms;STRONG-MAN;Animals;7;400.000000;1 
+Oko Szpiegowskie;BOND-007;MI6;8;50.000000;2 
+Monostruna;LUCY-01;Arasaka;8;210.000000;2 
+Ostrza Modliszkowe;MAX-TAC;Militech;8;320.000000;0 
+Oko Szpiegowskie v2;BOND-007;CIA;9;55.000000;2 
+Sandevistan Operating System;DAVID-01;Arasaka;9;850.000000;2 
+Egzoszkielet;Kiroshi;Arasaka;9;300.000000;2 
+Oko Szpiegowskie v3;BOND-007;KGB;10;60.000000;2 
+Wyrzutnia Rakiet;BOOM-01;Bazarek;10;900.000000;2 
+Mantis Blades Zregenerowane;CYBER-PSYCHO;Scavengers;10;300.000000;2 

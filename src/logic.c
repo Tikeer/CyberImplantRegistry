@@ -11,34 +11,86 @@ int validate_implant_rules(Implant data) {
     }
 
     if (data.energy > 85.0 && data.status == LEGAL) {
-        data.status = ILLEGAL;
-        printf("Moc energi zbyt duza, zmienianie statusu\n");
-        return 0;
+        return 2;
     }
     return 1;
 }
 
-void find_implant(Node** head_ref,char* search) {
+void find_implant(Node** head_ref,char* search,int mode) {
     Node* current = *head_ref;
     int found = 0;
+    int search_int;
+    float search_float;
 
     if (current == NULL) {
         return;
     }
 
+    int len = strlen(search);
+
     while (current != NULL) {
-        //wyszukiwanie po nazwie implantu
-        if (strcmp(current->data.name, search) == 0) {
-            show_implant_data(current->data);
-            found = 1;
 
-        }
-        //wyszukiwanie po ID
-        if (strcmp(current->data.id, search) == 0) {
-            show_implant_data(current->data);
-            found = 1;
+        switch (mode) {
+            case 1: {
+                //wyszukiwanie po nazwie implantu
+                read_line(search, 100);
+                if (strncmp(current->data.name,search,len) == 0) {
+                    show_implant_data(current->data);
+                    found = 1;
+                }
+                break;
+            }
+            case 2: {
+                //wyszukiwanie po ID
+                read_line(search, 100);
+                if (strncmp(current->data.id,search,len) == 0) {
+                    show_implant_data(current->data);
+                    found = 1;
+                }
+                break;
+            }
+            case 3: {
+                //wyszukiwanie po producencie
+                read_line(search, 100);
+                if (strncmp(current->data.developer,search,len) == 0) {
+                    show_implant_data(current->data);
+                    found = 1;
+                }
+                break;
+            }
+            case 4: {
+                //wyszukiwanie po ryzyku
+                scanf("%d",&search_int);
+                if (current->data.risk == search_int) {
+                    show_implant_data(current->data);
+                    found = 1;
+                }
+            }
+            case 5: {
+                //wyszukiwanie po mocy energii
+                scanf("%f",&search_float);
+                if (current->data.energy == search_float) {
+                    show_implant_data(current->data);
+                    found = 1;
+                }
+            }
+            case 6: {
+                //wyszukiwanie po statusie
+                printf("0 - LEGAL");
+                printf("1 - GRAY_AREA");
+                printf("2 - ILLEGAL");
 
+                scanf("%d",&search_int);
+                if (current->data.status == search_int) {
+                    show_implant_data(current->data);
+                    found = 1;
+                }
+            }
+            default:
+                printf("Wybierz poprawna opcje\n");
         }
+
+
         current = current->next;
     }
     if (found == 0) {
@@ -61,10 +113,9 @@ stats count_illegal(Node** head_ref) {
         if (current->data.status == GRAY_AREA) {
             s.gray_area_counter++;
         }
+        current = current->next;
     }
     s.sum = s.sum + s.legal_counter + s.illegal_counter;
-    //dodalem to zeby wypisac pozniej przy wyszukiwaniu np albo jak odpala sie program ile jest
-    //rekordow oraz statystyki ile jakiego statusu implantow jest
     return s;
 }
 

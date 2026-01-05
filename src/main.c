@@ -1,10 +1,14 @@
 #include <stdio.h>
 #include "implant_def.h"
 #include "file_io.h"
+#include "list_manager.h"
 
 #include "ui.h"
 
 int main(int argc, char* argv[]) {
+
+    setbuf(stdout,NULL);
+
     if (argc < 2) {
         printf("Nie podano zadnych argumentow \n");
         printf("Instrukcja: %s <sciezka_do_bazy_danych>\n", argv[0]);
@@ -21,5 +25,7 @@ int main(int argc, char* argv[]) {
             break;
             }
         }
+
+    free_list(&head);
     return 0;
 }

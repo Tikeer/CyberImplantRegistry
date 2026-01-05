@@ -38,13 +38,15 @@ void load_database(char* db_path, Node** head_ref) {
     int temp_risk;
     int temp_status;
 
-
     if (!f) {
-        printf("Blad przy otwieraniu pliku %s %s \n",db_path ,strerror(errno));
+        printf("Plik bazy danych nie istnieje lub nie mozna otworzyc. Tworze nowa baze.\n");
         return;
     }
 
-    while (fscanf(f," %[^;];%[^;];%[^;];%d;%lf;%d",
+    //wczytywanie max znakow do srednika
+    // [^;] skanuj wszystko co nie jest srednikiem
+    //String max 100,127,127 ,int,double,int
+    while (fscanf(f," %100[^;];%127[^;];%127[^;];%d;%lf;%d",
         temp_name,
         temp_id,
         temp_developer,
@@ -52,15 +54,15 @@ void load_database(char* db_path, Node** head_ref) {
         &temp_energy,
         &temp_status ) == 6) {
 
-        Implant new;
-        strcpy(new.name, temp_name);
-        strcpy(new.id, temp_id);
-        strcpy(new.developer, temp_developer);
-        new.energy = temp_energy;
-        new.risk = temp_risk;
-        new.status = (ImplantStatus)temp_status;
+        Implant new_implant;
+        strcpy(new_implant.name, temp_name);
+        strcpy(new_implant.id, temp_id);
+        strcpy(new_implant.developer, temp_developer);
+        new_implant.energy = temp_energy;
+        new_implant.risk = temp_risk;
+        new_implant.status = (ImplantStatus)temp_status;
 
-        append_node(head_ref, new);
+        append_node(head_ref, new_implant);
     }
 
     fclose(f);
