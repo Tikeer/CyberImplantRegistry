@@ -11,23 +11,32 @@
 #else
     #define CLEAR "clear"
 #endif
-
+//funkcja czysci smieci z buffera
 void clear_buffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
-
+//funkcja wczytuje tekst oraz robi walidacje dlugosci
 void read_line(char* buffer, int size) {
     if (fgets(buffer, size, stdin) != NULL) {
-        buffer[strcspn(buffer, "\n")] = 0;
+
+        char *newline = strchr(buffer, '\n');
+
+        if (newline) {
+            *newline = '\0';
+        }
+        else {
+            clear_buffer();
+        }
+
     }
 }
-
+//funkcja do lepszej iwdocznosci programu
 void wait_for_enter() {
     printf("\nNacisnij enter aby kontynuowac");
     getchar();
 }
-
+//funkcja zamienia enum na tekst
 const char* status_string(ImplantStatus status) {
     switch (status) {
         case LEGAL: return "LEGAL";
@@ -36,40 +45,79 @@ const char* status_string(ImplantStatus status) {
         default: return "ERROR";
     }
 }
+//funkcja wyswietla menu do usuwania danych
+int show_delete_criteria_menu() {
+    int program;
+    int wybor;
+    printf("Podaj jak chcesz usunac:\n");
+    printf("1.Za pomoca ID\n");
+    printf("2.Po ryzyku > X (masowo)\n");
 
+    do {
+        program = scanf(" %d", &wybor);
+        if (program != 1) {
+            while (getchar() != '\n');
+            printf("To nie jest liczba! Sproboj ponownie\n");
+            continue;
+        }
+        if (wybor < 1 || wybor > 2) {
+            printf("Podaj liczbe z zakresu 1-2\n");
+        }
+    }while (program != 1 || wybor < 1 || wybor > 2);
+
+    return wybor;
+}
+//funkcja wyswietla menu sortujace
 int show_criteria_menu() {
     int program;
+    int wybor;
     printf("Jak chcesz posortowac dane?\n");
     printf("1. Nazwa\n");
     printf("2. ID\n");
     printf("3. Ryzyko\n");
 
-    if (scanf(" %d", &program) != 1) {
-        while (getchar() != '\n');
-        program = -1;
-    }
+    do {
+        program = scanf(" %d", &wybor);
+        if (program != 1) {
+            while (getchar() != '\n');
+            printf("To nie jest liczba! Sproboj ponownie\n");
+            continue;
+        }
+        if (wybor < 1 || wybor > 3) {
+            printf("Podaj liczbe z zakresu 1-3\n");
+        }
+    }while (program != 1 || wybor < 1 || wybor > 3);
 
-    return program;
+    return wybor;
 }
-
+//funkcja wyswietla menu wyszukiwania
 int show_search_menu() {
     int program;
+    int wybor;
     printf("Podaj po czym chceszz wyszukac:\n");
     printf("1.Nazwa\n");
     printf("2.ID\n");
     printf("3.Producent\n");
     printf("4.Ryzyko\n");
-    printf("5. Moc energii\n");
-    printf("6. Status\n");
+    printf("5.Poziom mocy\n");
+    printf("6.Status\n");
 
-    if (scanf(" %d", &program) != 1) {
-        while (getchar() != '\n');
-        program = -1;
-    }
 
-    return program;
+    do {
+        program = scanf(" %d", &wybor);
+        if (program != 1) {
+            while (getchar() != '\n');
+            printf("To nie jest liczba! Sproboj ponownie\n");
+            continue;
+        }
+        if (wybor < 1 || wybor > 6) {
+            printf("Podaj liczbe z zakresu 1-6\n");
+        }
+    }while (program != 1 || wybor < 1 || wybor > 6);
+
+    return wybor;
 }
-
+//funkcja pobiera dane od uzytkownika
 Implant get_user_input() {
     Implant temp;
     int x = -1;
@@ -89,39 +137,40 @@ Implant get_user_input() {
     printf("\n");
 
     printf("Podaj ryzyko implantu:\n");
-    scanf("%d",&temp.risk);
+    while (scanf("%d",&temp.risk) != 1){
+        printf("To nie liczba! Sproboj ponownie!\n");
+        clear_buffer();
+    }
+    clear_buffer();
     printf("\n");
 
     printf("Podaj poziom mocy energi:\n");
-    scanf("%lf",&temp.energy);
+    while (scanf("%lf",&temp.energy) != 1) {
+        printf("To nie liczba! Sproboj ponownie!\n");
+        clear_buffer();
+    }
+    clear_buffer();
     printf("\n");
 
     printf("Wybierz status implantu: \n");
     printf("1. LEGAL 2.GRAY_AREA 3.ILLEGAL\n");
 
-    if (scanf(" %d", &x) != 1) {
-        while (getchar() != '\n');
-        x = -1;
+    while(scanf(" %d", &x) != 1) {
+        printf("To nie liczba! Sproboj ponownie!\n");
+        clear_buffer();
     }
+    clear_buffer();
 
-    switch (x) {
-        case 1:
-            temp.status = (ImplantStatus)(x - 1);
-            break;
-        case 2:
-            temp.status = (ImplantStatus)(x - 1);
-            break;
-        case 3:
-            temp.status = (ImplantStatus)(x - 1);
-            break;
-        default:
-            printf("Podaj liczbe z zakresu 1-3:\n");
-            temp.status = ILLEGAL;
+    if (x >= 1 && x <= 3) {
+        temp.status = (ImplantStatus)(x - 1);
+    } else {
+        printf("Błąd: Podaj liczbę z zakresu 1-3.\n");
+        temp.status = ILLEGAL;
     }
 
     return temp;
 }
-
+//funkcja wypisuje dane w formie tabeli
 void print_table(Node* head,stats s) {
 
     if (head == NULL) {
@@ -129,7 +178,7 @@ void print_table(Node* head,stats s) {
     }
 
     printf("\n%-20s || %-15s || %-15s || %-5s || %-8s || %-10s\n",
-           "Nazwa", "ID", "Producent", "Ryzyko", "Energia", "Status");
+           "Nazwa", "ID", "Producent", "Ryzyko", "Poziom mocy", "Status");
 
     while (head != NULL) {
         printf("%-20s || %-15s || %-15s || %-5d || %-8.2f || %-10s\n",
@@ -148,7 +197,7 @@ void print_table(Node* head,stats s) {
     printf("%d implantow z szarej strefy\n",s.gray_area_counter);
     printf("%d nielegalnych implantow\n",s.illegal_counter);
 }
-
+//funkcja wyswietlajaca menu
 int print_menu(Node** head_ref,char* db_path) {
     int program = -1;
     char buffer[128];
@@ -180,7 +229,7 @@ int print_menu(Node** head_ref,char* db_path) {
             }
             else if (wynik == 2) {
                 new_product.status = ILLEGAL;
-                printf("Moc energi zbyt duza, zmienianie statusu\n");
+                printf("Poziom mocy jest zbyt duzy, zmienianie statusu\n");
                 append_node(head_ref,new_product);
             }
             else {
@@ -192,9 +241,12 @@ int print_menu(Node** head_ref,char* db_path) {
         }
         case 2: {
             char search[100];
-            clear_buffer();
+
 
             int choice = show_search_menu();
+            if (choice >= 1 && choice <= 3) {
+                clear_buffer();
+            }
             find_implant(head_ref,search,choice);
 
             wait_for_enter();
@@ -203,7 +255,7 @@ int print_menu(Node** head_ref,char* db_path) {
         case 3: {
             clear_buffer();
 
-            printf("Podaj ID zeby zedytowac dane:\n");
+            printf("Podaj ID do zmodyfikowania danych:\n");
             read_line(buffer, SIZE);
 
             edit_implant_data(head_ref,buffer);
@@ -225,11 +277,25 @@ int print_menu(Node** head_ref,char* db_path) {
             break;
         }
         case 5: {
-            clear_buffer();
+            int choice = show_delete_criteria_menu();
 
-            printf("Podaj ID do usuniecia:\n");
-            read_line(buffer, SIZE);
-            try_delete_implant(head_ref,buffer);
+            if (choice == 1) {
+                clear_buffer();
+                printf("Podaj dane do usuniecia:\n");
+                read_line(buffer, SIZE);
+                try_delete_implant(head_ref,buffer);
+            }
+            else {
+                int risk;
+                printf("Podaj prog ryzyka:\n");
+                while (scanf("%d",&risk) != 1) {
+                    clear_buffer();
+                    printf("Podaj liczbe! Sproboj ponownie\n");
+                }
+                clear_buffer();
+                delete_node_by_risk(head_ref,risk);
+            }
+            clear_buffer();
             wait_for_enter();
             break;
         }
@@ -259,7 +325,7 @@ int print_menu(Node** head_ref,char* db_path) {
     }
     return 1;
 }
-
+//funkcja wyswietla informacje o implancie
 void show_implant_data(Implant data) {
 
     printf("DANE IMPLANTU\n");
@@ -272,18 +338,27 @@ void show_implant_data(Implant data) {
 
 
 }
-
-int show_edit_menu(int program) {
-    printf("Wybierz ktore pole chcesz zedytowac:\n");
+//funkcja wyswietla menu do edytowania danych
+int show_edit_menu() {
+    int program;
+    int wybor;
+    printf("Wybierz ktore pole chcesz zmodyfikowac:\n");
     printf("1. ID\n");
     printf("2. Producent\n");
     printf("3. Ryzyko\n");
-    printf("4. Energia\n");
+    printf("4. Poziom mocy\n");
 
-    if (scanf(" %d", &program) != 1) {
-        while (getchar() != '\n');
-        program = -1;
-    }
+    do {
+        program = scanf(" %d", &wybor);
+        if (program != 1) {
+            while (getchar() != '\n');
+            printf("To nie jest liczba! Sproboj ponownie\n");
+            continue;
+        }
+        if (wybor < 1 || wybor > 4) {
+            printf("Podaj liczbe z zakresu 1-4\n");
+        }
+    }while (program != 1 || wybor < 1 || wybor > 4);
 
-    return program;
+    return wybor;
 }
