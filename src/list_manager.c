@@ -4,7 +4,7 @@
 #include <string.h>
 #include "logic.h"
 #include "ui.h"
-
+//funkcja tworzy nowy wezel (wagon/pojemnik) w liscie
 Node* create_node(Implant data) {
     Node* new_node = (Node*)malloc(sizeof(Node));
 
@@ -17,37 +17,35 @@ Node* create_node(Implant data) {
 
     return new_node;
 }
-
+//funkcja dodaje nowy wezel do listy
 void append_node(Node** head_ref, Implant data) {
-    Node* current = *head_ref;
     Node* new_node = create_node(data);
+    if (*head_ref == NULL) {
+        *head_ref = new_node;
+        return;
+    }
+
+    Node* current = *head_ref;
 
     while (current != NULL) {
         if (strcmp(current->data.id, data.id) == 0 && strcmp(current->data.name, data.name) == 0 ) {
             printf("DUPLIKAT");
+            free(new_node);
+            return;
+        }
+
+        if (current->next == NULL) {
+            current->next = new_node;
             return;
         }
         current = current->next;
     }
-
-    if (new_node == NULL) {
-        return;
-    }
-
-    if (*head_ref == NULL) {
-        *head_ref = new_node;
-    }else {
-        current = *head_ref;
-        while (current->next != NULL) {
-            current = current->next;
-        }
-        current->next = new_node;
-    }
 }
-
+//funkcja usuwa wybrany wezel/wezly z listy
 void delete_node(Node** head_ref, char* id_to_delete) {
     Node* current = *head_ref;
     Node* previous = NULL;
+    Node* temp_next = NULL;
 
     if (current == NULL) {
         return;
@@ -55,27 +53,67 @@ void delete_node(Node** head_ref, char* id_to_delete) {
 
     while (current != NULL) {
         if (strcmp(current->data.id, id_to_delete) == 0 ) {
+            //nastepny
+            temp_next = current->next;
 
             if (current->data.status == ILLEGAL) {
                 printf("DOWOD W SPRAWIE, NIE MOZNA USUNAC");
-                return;
+                previous = current;
+                current = current->next;
             }
             else {
                 if (previous == NULL) {
-                    *head_ref = current->next;
-                    free(current);
+                    //usuniecie glowy przechodzi na nastepny
+                    *head_ref = temp_next;
                 }
                 else {
-                    previous->next = current->next;
-                    free(current);
+                    previous->next = temp_next;
                 }
+                printf("Poprawnie usunieto implant %s",current->data.name);
+                free(current);
+                current = temp_next;
             }
         }
-        previous = current;
-        current = current->next;
+        else {
+            previous = current;
+            current = current->next;
+        }
     }
 }
+void delete_node_by_risk(Node** head_ref, int risk_int) {
+    Node* current = *head_ref;
+    Node* previous = NULL;
+    Node* next_node = NULL;
+    int deleted_count = 0;
 
+    while (current != NULL) {
+        next_node = current->next;
+
+        if (current->data.risk >= risk_int) {
+            if (current->data.status == ILLEGAL) {
+                printf("Pominieto usuwanie: %s (DOWOD W SPRAWIE)\n", current->data.id);
+                previous = current;
+                current = next_node;
+            }
+            else {
+                if (previous == NULL) {
+                    *head_ref = next_node;
+                } else {
+                    previous->next = next_node;
+                }
+                free(current);
+                deleted_count++;
+                current = next_node;
+            }
+        }
+        else {
+            previous = current;
+            current = next_node;
+        }
+    }
+    printf("Usunieto %d implant/ow o ryzyku > %d\n", deleted_count, risk_int);
+}
+//funkcja ktora czysci liste
 void free_list(Node** head_ref) {
     Node* current = *head_ref;
     while (current != NULL) {
@@ -85,6 +123,7 @@ void free_list(Node** head_ref) {
     }
     *head_ref = NULL;
 }
+//funkcja pomocnicza zwraca dlugosc listy
 int list_length(Node* head) {
     Node* current = head;
     int length = 0;
@@ -95,7 +134,8 @@ int list_length(Node* head) {
     }
     return length;
 }
-void sort_list(Node** head_ref, int cryteria) {
+//funkcja ktora sortuje liste wedlug wybranego kryterium
+void sort_list(Node** head_ref, int criteria) {
     Node* current = *head_ref;
     int swapped =0;
     int should_swap = 0;
@@ -107,7 +147,7 @@ void sort_list(Node** head_ref, int cryteria) {
         swapped = 0;
         current = *head_ref;
         do {
-            switch (cryteria) {
+            switch (criteria) {
                 case 1:
                     if (strcmp(current->data.name, current->next->data.name) > 0) {
                         should_swap = 1;
@@ -135,10 +175,9 @@ void sort_list(Node** head_ref, int cryteria) {
         }while (current->next != NULL);
     }while (swapped == 1);
 }
-
+//funkcja ktora umozliwia edytowanie danych z bazy danych z walidacja
 void edit_implant_data(Node** head_ref,char* search_data) {
     Node* current = *head_ref;
-    int program = -1;
     int choice = -1;
     char buffer[128];
 
@@ -150,7 +189,7 @@ void edit_implant_data(Node** head_ref,char* search_data) {
 
     while (current != NULL) {
         if (strcmp(current->data.id, search_data) == 0) {
-            choice = show_edit_menu(program);
+            choice = show_edit_menu();
             temp = current->data;
             switch (choice) {
                 case 1: {
@@ -169,7 +208,11 @@ void edit_implant_data(Node** head_ref,char* search_data) {
                 }
                 case 3: {
                     printf("Podaj nowe dane:\n");
-                    scanf("%d",&temp.risk);
+                    while (scanf("%d",&temp.risk) != 1) {
+                        printf("Podaj liczbe! Sproboj ponownie:\n");
+                        clear_buffer();
+                    }
+                    clear_buffer();
 
                     int res = validate_implant_rules(temp);
 
@@ -183,7 +226,11 @@ void edit_implant_data(Node** head_ref,char* search_data) {
                 }
                 case 4: {
                     printf("Podaj nowe dane:\n");
-                    scanf("%lf",&temp.energy);
+                    while (scanf("%lf",&temp.energy) != 1) {
+                        printf("Podaj liczbe! Sproboj ponownie:\n");
+                        clear_buffer();
+                    }
+                    clear_buffer();
 
                     int res = validate_implant_rules(temp);
 
@@ -202,6 +249,9 @@ void edit_implant_data(Node** head_ref,char* search_data) {
                     printf("Wybierz poprawny numer z zakresu 1-4\n");
             }
             return;
+        }
+        else {
+            printf("Nie znaleziono.\n");
         }
         current = current->next;
     }
