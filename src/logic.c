@@ -3,10 +3,14 @@
 #include "ui.h"
 #include <stdio.h>
 #include <string.h>
-
+#include <math.h>
+//funkcja sprawdzajaca czy wprowadzane dane sa zgodne z ograniczeniami
 int validate_implant_rules(Implant data) {
 
     if (data.risk < 0 || data.risk > 10) {
+        return 0;
+    }
+    if (data.energy <= 0) {
         return 0;
     }
 
@@ -15,82 +19,108 @@ int validate_implant_rules(Implant data) {
     }
     return 1;
 }
-
+//funkcja ktora znajduje wybrany implant wedlug wybranego kryterium
 void find_implant(Node** head_ref,char* search,int mode) {
     Node* current = *head_ref;
     int found = 0;
     int search_int;
-    float search_float;
+    double search_float;
 
     if (current == NULL) {
         return;
     }
 
+    switch (mode) {
+        case 1://nazwa
+            printf("Podaj nazwe:\n");
+            read_line(search, 100);
+            break;
+        case 2://id
+            printf("Podaj ID:\n");
+            read_line(search, 100);
+            break;
+        case 3://producent
+            printf("Podaj producenta:\n");
+            read_line(search, 100);
+            break;
+        case 4://ryzyko
+            printf("Podaj ryzyko:\n");
+            while (scanf("%d",&search_int) != 1) {
+                printf("Nie liczba! Sproboj ponownie\n");
+                clear_buffer();
+            }
+            clear_buffer();
+            break;
+        case 5://poziom mocy
+            printf("Podaj poziom mocy:\n");
+            while (scanf("%lf",&search_float) != 1) {
+                printf("Nie liczba! Sproboj ponownie\n");
+                clear_buffer();
+            }
+            clear_buffer();
+            break;
+        case 6://status
+            printf("0 - LEGAL \n");
+            printf("1 - GRAY_AREA\n");
+            printf("2 - ILLEGAL\n");
+            while (scanf("%d",&search_int) != 1) {
+                printf("Nie liczba! Sproboj ponownie\n");
+                clear_buffer();
+            }
+            clear_buffer();
+            break;
+        default:
+            printf("Wybierz poprawna opcje\n");
+            return;
+    }
+
     int len = strlen(search);
 
     while (current != NULL) {
-
         switch (mode) {
-            case 1: {
+            case 1:
                 //wyszukiwanie po nazwie implantu
-                read_line(search, 100);
                 if (strncmp(current->data.name,search,len) == 0) {
                     show_implant_data(current->data);
                     found = 1;
                 }
                 break;
-            }
-            case 2: {
+            case 2:
                 //wyszukiwanie po ID
-                read_line(search, 100);
                 if (strncmp(current->data.id,search,len) == 0) {
                     show_implant_data(current->data);
                     found = 1;
                 }
                 break;
-            }
-            case 3: {
+            case 3:
                 //wyszukiwanie po producencie
-                read_line(search, 100);
                 if (strncmp(current->data.developer,search,len) == 0) {
                     show_implant_data(current->data);
                     found = 1;
                 }
                 break;
-            }
-            case 4: {
+            case 4:
                 //wyszukiwanie po ryzyku
-                scanf("%d",&search_int);
                 if (current->data.risk == search_int) {
                     show_implant_data(current->data);
                     found = 1;
                 }
-            }
-            case 5: {
+                break;
+            case 5:
                 //wyszukiwanie po mocy energii
-                scanf("%f",&search_float);
-                if (current->data.energy == search_float) {
+                if (fabs(current->data.energy - search_float) < 0.01) {
                     show_implant_data(current->data);
                     found = 1;
                 }
-            }
-            case 6: {
+                break;
+            case 6:
                 //wyszukiwanie po statusie
-                printf("0 - LEGAL");
-                printf("1 - GRAY_AREA");
-                printf("2 - ILLEGAL");
-
-                scanf("%d",&search_int);
-                if (current->data.status == search_int) {
+                if ((int)current->data.status == search_int) {
                     show_implant_data(current->data);
                     found = 1;
                 }
-            }
-            default:
-                printf("Wybierz poprawna opcje\n");
+                break;
         }
-
-
         current = current->next;
     }
     if (found == 0) {
@@ -98,7 +128,7 @@ void find_implant(Node** head_ref,char* search,int mode) {
     }
 
 }
-
+//funkcja liczaca ilosc rekordow w bazie danych oraz ilosc poszczegolnych implantow z roznym statusem
 stats count_illegal(Node** head_ref) {
     Node* current = *head_ref;
     stats s = {0,0,0,0};
@@ -115,10 +145,10 @@ stats count_illegal(Node** head_ref) {
         }
         current = current->next;
     }
-    s.sum = s.sum + s.legal_counter + s.illegal_counter;
+    s.sum = s.sum + s.legal_counter + s.illegal_counter + s.gray_area_counter;
     return s;
 }
-
+//funkcja sprawdzajaca czy wybrany implant jest usuwalny
 void try_delete_implant(Node** head_ref,char* try_to_delete) {
     Node* current = *head_ref;
     int found = 0;
