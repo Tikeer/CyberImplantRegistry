@@ -19,7 +19,6 @@ System Celowniczy Smart;TYGER-01;Tyger Claws;6;120.000000;2
 Gorilla Arms;STRONG-MAN;Animals;7;400.000000;1 
 Oko Szpiegowskie;BOND-007;MI6;8;50.000000;2 
 Monostruna;LUCY-01;Arasaka;8;210.000000;2 
-Ostrza Modliszkowe;MAX-TAC;Militech;8;320.000000;0 
 Oko Szpiegowskie v2;BOND-007;CIA;9;55.000000;2 
 Sandevistan Operating System;DAVID-01;Arasaka;9;850.000000;2 
 Egzoszkielet;Kiroshi;Arasaka;9;300.000000;2 

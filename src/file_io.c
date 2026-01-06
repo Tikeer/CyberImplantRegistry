@@ -4,13 +4,13 @@
 #include <stdlib.h>
 #include "implant_def.h"
 #include "list_manager.h"
-
+//funkcja odpowiada za zapisywanie danych do bazy danych
 void save_database(char* db_path, Node* node) {
     Node* current = node;
     FILE *f = fopen(db_path,"w");
 
     if (!f) {
-        printf("Blad przy otwieraniu pliku database.txt %s \n", strerror(errno));
+        printf("Blad przy otwieraniu pliku %s %s \n",db_path, strerror(errno));
         return;
     }
 
@@ -29,6 +29,7 @@ void save_database(char* db_path, Node* node) {
 
     fclose(f);
 }
+// funkcja wczytuje dane z bazy danych
 void load_database(char* db_path, Node** head_ref) {
     FILE *f = fopen(db_path,"r");
     char temp_name[101];
